@@ -1,9 +1,10 @@
-package main
+package controllers
 
 import (
 	"fmt"
 	"net/http"
-	"vitamin-transfer/utils"
+	"VitaminTransfer/models"
+	"VitaminTransfer/utils"
 )
 
 func DonateHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,15 +24,15 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
 	
 	switch paymentMethod {
 	case "PayPal":
-		err = utils.ProcessPayPalPayment(amount, "USD")
+		err = models.ProcessPayPalPayment(amount, "USD")
 	case "Visa":
 		cardNumber := r.FormValue("cardNumber")
 		expiry := r.FormValue("expiry")
 		cvv := r.FormValue("cvv")
-		err = utils.ProcessVisaPayment(amount, cardNumber, expiry, cvv)
+		err = models.ProcessVisaPayment(amount, cardNumber, expiry, cvv)
 	case "Mpesa":
 		phoneNumber := r.FormValue("phoneNumber")
-		err = utils.ProcessMpesaPayment(amount, phoneNumber)
+		err = models.ProcessMpesaPayment(amount, phoneNumber)
 	default:
 		http.Error(w, "Invalid payment method", http.StatusBadRequest)
 		return

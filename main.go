@@ -3,8 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
-	"vitamin-transfer/utils"
-
+	"VitaminTransfer/utils"
+	"VitaminTransfer/controllers"
+	"fmt"
 	"github.com/joho/godotenv"
 )
 
@@ -13,15 +14,16 @@ func main() {
 	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
+	fmt.Println("loaded .env")
 
 	// Initialize logging
 	utils.InitLogger()
 	utils.Logger.Info("Starting Vitamin Transfer application...")
 
 	// Define routes
-	http.HandleFunc("/", HomeHandler)
-	http.HandleFunc("/donate", DonateHandler)
-	http.HandleFunc("/success", SuccessHandler)
+	http.HandleFunc("/", controllers.HomeHandler)
+	http.HandleFunc("/donate", controllers.DonateHandler)
+	http.HandleFunc("/success", controllers.SuccessHandler)
 
 	// Start server
 	port := "8000"

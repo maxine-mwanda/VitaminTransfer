@@ -1,10 +1,11 @@
 package utils
-
+/*
 import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"os"
 	"context"
+	"strconv"
 )
 
 var RedisClient *redis.Client
@@ -25,4 +26,4 @@ func InitRedis() error {
 		return fmt.Errorf("failed to connect to Redis: %w", err)
 	}
 	return nil
-}
+}*/

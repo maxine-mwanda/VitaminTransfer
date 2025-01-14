@@ -1,9 +1,9 @@
-package utils
+package models
 
 import (
 	"fmt"
 	"os"
-	"net/http"
+	//"net/http"
 )
 
 func ProcessPayPalPayment(amount string, currency string) error {
