@@ -4,3 +4,4 @@ go.sum
 bin/
 vendor/
 db.sql
+.git
