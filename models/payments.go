@@ -82,7 +82,7 @@ func ProcessPayPalPayment(amount float64, currency string) (*PaymentResponse, er
 		},
 	}
 
-	createdOrder, err := client.CreateOrder(context.Background(), order)
+	createdOrder, err := client.CreateOrder(context.Background(), order.Intent, order.PurchaseUnits, nil, order.ApplicationContext)
 	if err != nil {
 		return nil, fmt.Errorf("PayPal order creation failed: %w", err)
 	}

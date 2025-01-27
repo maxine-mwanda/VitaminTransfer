@@ -5,6 +5,7 @@ import (
 	"VitaminTransfer/utils"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func DonateHandler(w http.ResponseWriter, r *http.Request) {
@@ -24,12 +25,24 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch paymentMethod {
 	case "PayPal":
-		err = models.ProcessPayPalPayment(amount, "USD")
+		var amountFloat float64
+		amountFloat, err = strconv.ParseFloat(amount, 64)
+		if err != nil {
+			http.Error(w, "Invalid amount", http.StatusBadRequest)
+			return
+		}
+		_, err = models.ProcessPayPalPayment(amountFloat, "USD")
 	case "Visa":
 		cardNumber := r.FormValue("cardNumber")
 		expiry := r.FormValue("expiry")
 		cvv := r.FormValue("cvv")
-		err = models.ProcessVisaPayment(amount, cardNumber, expiry, cvv)
+		var amountFloat float64
+		amountFloat, err = strconv.ParseFloat(amount, 64)
+		if err != nil {
+			http.Error(w, "Invalid amount", http.StatusBadRequest)
+			return
+		}
+		_, err = models.ProcessVisaPayment(amount, cardNumber, expiry, amountFloat, cvv)
 	case "Mpesa":
 		phoneNumber := r.FormValue("phoneNumber")
 		err = models.ProcessMpesaPayment(amount, phoneNumber)
