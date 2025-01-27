@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"fmt"
-	"net/http"
 	"VitaminTransfer/models"
 	"VitaminTransfer/utils"
+	"fmt"
+	"net/http"
 )
 
 func DonateHandler(w http.ResponseWriter, r *http.Request) {
@@ -17,11 +17,11 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	amount := r.FormValue("amount")
 	paymentMethod := r.FormValue("paymentMethod")
-	
+
 	utils.Logger.Infof("Processing donation: Name=%s, Email=%s, Amount=%s, PaymentMethod=%s", name, email, amount, paymentMethod)
 
 	var err error
-	
+
 	switch paymentMethod {
 	case "PayPal":
 		err = models.ProcessPayPalPayment(amount, "USD")
@@ -45,7 +45,6 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.Logger.Info("Payment processed successfully")
-	// Save donation to database (not implemented here)
-	
+
 	http.Redirect(w, r, "/success", http.StatusSeeOther)
 }
