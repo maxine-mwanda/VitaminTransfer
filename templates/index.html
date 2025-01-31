@@ -55,22 +55,14 @@
             margin-bottom: 20px;
         }
 
-        .donation-section form {
+        .donation-options {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        .donation-section form input, .donation-section form select {
-            padding: 10px;
-            margin: 10px 0;
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .donation-section button {
+        .donation-options button {
             background-color: #4CAF50;
             color: white;
             padding: 10px 20px;
@@ -78,25 +70,35 @@
             border-radius: 4px;
             font-size: 1rem;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        .donation-section button:hover {
+        .donation-options button:hover {
             background-color: #45a049;
         }
 
+        .minimum-donation {
+            font-size: 1rem;
+            margin-top: 10px;
+            color: #555;
+        }
+
         .image-gallery {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-top: 30px;
         }
 
         .image-gallery img {
             width: 100%;
-            max-width: 300px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .image-gallery img:hover {
+            transform: scale(1.05);
         }
 
         footer {
@@ -119,26 +121,49 @@
     <main class="container">
         <section class="donation-section">
             <h2>Make a Difference Today</h2>
-            <form action="/donate" method="POST">
-                <input type="text" name="amount" placeholder="Enter donation amount (USD)" required>
-                <select name="payment_method" required>
-                    <option value="paypal">PayPal</option>
-                    <option value="visa">Visa</option>
-                    <option value="mpesa">M-Pesa</option>
-                </select>
-                <button type="submit">Donate Now</button>
-            </form>
+            <div class="donation-options">
+                <button onclick="donateWithPayPal()">Donate with PayPal</button>
+                <button onclick="donateWithVisa()">Donate with Visa</button>
+                <button onclick="donateWithMpesa()">Donate with M-Pesa</button>
+            </div>
+            <div class="minimum-donation">
+                Minimum donation amount: $1
+            </div>
         </section>
 
         <section class="image-gallery">
-            <img src="https://example.com/child-eating-mango-1.jpg" alt="Child eating mango">
+            <img src="/home/maxine/Desktop/img/Image 2.jpeg" alt="Child eating mango">
             <img src="https://example.com/child-eating-mango-2.jpg" alt="Child enjoying fruit">
             <img src="https://example.com/group-of-children.jpg" alt="Group of happy children">
+            <img src="https://example.com/image4.jpg" alt="Image 4">
+            <img src="https://example.com/image5.jpg" alt="Image 5">
+            <img src="https://example.com/image6.jpg" alt="Image 6">
+            <img src="https://example.com/image7.jpg" alt="Image 7">
+            <img src="https://example.com/image8.jpg" alt="Image 8">
+            <img src="https://example.com/image9.jpg" alt="Image 9">
+            <img src="https://example.com/image10.jpg" alt="Image 10">
         </section>
     </main>
 
     <footer>
         <p>&copy; 2025 Vitamin Transfer. All rights reserved.</p>
     </footer>
+
+    <script>
+        function donateWithPayPal() {
+            alert("Redirecting to PayPal donation page...");
+            // Add redirection logic here
+        }
+
+        function donateWithVisa() {
+            alert("Redirecting to Visa donation page...");
+            // Add redirection logic here
+        }
+
+        function donateWithMpesa() {
+            alert("Redirecting to M-Pesa donation page...");
+            // Add redirection logic here
+        }
+    </script>
 </body>
 </html>

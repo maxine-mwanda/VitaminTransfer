@@ -24,14 +24,14 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	switch paymentMethod {
-	case "PayPal":
-		var amountFloat float64
-		amountFloat, err = strconv.ParseFloat(amount, 64)
-		if err != nil {
-			http.Error(w, "Invalid amount", http.StatusBadRequest)
-			return
-		}
-		_, err = models.ProcessPayPalPayment(amountFloat, "USD")
+	/*case "PayPal":
+	var amountFloat float64
+	amountFloat, err = strconv.ParseFloat(amount, 64)
+	if err != nil {
+		http.Error(w, "Invalid amount", http.StatusBadRequest)
+		return
+	}
+	_, err = models.ProcessPayPalPayment(amountFloat, "USD")*/
 	case "Visa":
 		cardNumber := r.FormValue("cardNumber")
 		expiry := r.FormValue("expiry")

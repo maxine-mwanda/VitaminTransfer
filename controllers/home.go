@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"VitaminTransfer/utils"
 	"html/template"
 	"net/http"
-	"VitaminTransfer/utils"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {

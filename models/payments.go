@@ -67,22 +67,41 @@ func ProcessPayPalPayment(amount float64, currency string) (*PaymentResponse, er
 	}
 
 	// Create a PayPal order
-	order := paypal.CreateOrderRequest{
+
+	order := paypal.Order{
 		Intent: "CAPTURE",
-		PurchaseUnits: []paypal.PurchaseUnitRequest{{
-			Amount: &paypal.PurchaseUnitAmount{
-				Value:    fmt.Sprintf("%.2f", amount),
-				Currency: currency,
+		PurchaseUnits: []paypal.PurchaseUnit{
+			{
+				Amount: &paypal.PurchaseUnitAmount{
+					Value:    fmt.Sprintf("%.2f", amount),
+					Currency: currency,
+				},
+				Description: "Donation to Vitamin Transfer",
 			},
-			Description: "Donation to Vitamin Transfer",
-		}},
-		ApplicationContext: &paypal.ApplicationContext{
-			ReturnURL: "http://localhost:8080/success",
-			CancelURL: "http://localhost:8080/cancel",
 		},
 	}
 
-	createdOrder, err := client.CreateOrder(context.Background(), order.Intent, order.PurchaseUnits, nil, order.ApplicationContext)
+	// Create the order with the provided details
+	createdOrder, err := client.CreateOrder(
+		context.Background(), // Use a specific context if needed (e.g., context.WithTimeout)
+		order.Intent,         // Ensure this is a valid PayPal order intent (e.g., "CAPTURE" or "AUTHORIZE")
+		[]paypal.PurchaseUnitRequest{
+			{
+				Amount: &paypal.PurchaseUnitAmount{
+					Value:    fmt.Sprintf("%.2f", amount),
+					Currency: currency,
+				},
+				Description: "Donation to Vitamin Transfer",
+			},
+		},
+		nil, // Additional parameters (if any)
+		&paypal.ApplicationContext{
+			ReturnURL: "http://localhost:8080/success", // Redirect URL after successful payment
+			CancelURL: "http://localhost:8080/cancel",  // Redirect URL if the user cancels
+		},
+	)
+
+	// Handle any errors that occurred during order creation
 	if err != nil {
 		return nil, fmt.Errorf("PayPal order creation failed: %w", err)
 	}
@@ -96,6 +115,11 @@ func ProcessPayPalPayment(amount float64, currency string) (*PaymentResponse, er
 		}
 	}
 
+	// Log or use the approval URL
+	fmt.Printf("Approval URL: %s", approvalURL)
+
+	// Return the created order and nil error
+
 	// Save payment to the database
 	if err := savePaymentToDB(createdOrder); err != nil {
 		return nil, err
@@ -106,7 +130,6 @@ func ProcessPayPalPayment(amount float64, currency string) (*PaymentResponse, er
 		Message: fmt.Sprintf("Please complete the payment by visiting: %s", approvalURL),
 	}, nil
 }
-
 func saveVisaTransactionToDB(cardNumber, expiryDate string, amount float64, currency string) error {
 	query := `
         INSERT INTO visa_transactions (card_number, expiry_date, amount, currency) 
