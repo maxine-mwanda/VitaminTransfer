@@ -13,7 +13,6 @@ import (
 	"github.com/plutov/paypal/v4"
 )
 
-var db *sql.DB
 
 type PaymentResponse struct {
 	Status  string
@@ -41,34 +40,13 @@ func InitializePayPalClient() (*paypal.Client, error) {
 	return client, nil
 }
 
-func savePaymentToDB(order *paypal.Order) error {
-	query := `
-        INSERT INTO payments (id, intent, payer_email, total, currency, description) 
-        VALUES (?, ?, ?, ?, ?, ?)
-    `
-	_, err := db.Exec(
-		query,
-		order.ID,
-		order.Intent,
-		order.Payer.EmailAddress,
-		order.PurchaseUnits[0].Amount.Value,
-		order.PurchaseUnits[0].Amount.Currency,
-		order.PurchaseUnits[0].Description,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to save payment to database: %w", err)
-	}
-	return nil
-}
 
-func ProcessPayPalPayment(amount float64, currency string) (*PaymentResponse, error) {
+func ProcessPayPalPayment(amount float64, currency string, db *sql.DB) (*PaymentResponse, error) {
 	client, err := InitializePayPalClient()
 	if err != nil {
 		return nil, err
 	}
-
 	// Create a PayPal order
-
 	order := paypal.Order{
 		Intent: "CAPTURE",
 		PurchaseUnits: []paypal.PurchaseUnit{
@@ -97,8 +75,8 @@ func ProcessPayPalPayment(amount float64, currency string) (*PaymentResponse, er
 		},
 		nil, // Additional parameters (if any)
 		&paypal.ApplicationContext{
-			ReturnURL: "http://localhost:8000/success", // Redirect URL after successful payment
-			CancelURL: "http://localhost:8000/cancel",  // Redirect URL if the user cancels
+			ReturnURL: "http://localhost:8080/success", // Redirect URL after successful payment
+			CancelURL: "http://localhost:8080/cancel",  // Redirect URL if the user cancels
 		},
 	)
 
@@ -122,16 +100,37 @@ func ProcessPayPalPayment(amount float64, currency string) (*PaymentResponse, er
 	// Return the created order and nil error
 
 	// Save payment to the database
-	if err := savePaymentToDB(createdOrder); err != nil {
-		return nil, err
-	}
+	//if err := savePaymentToDB(createdOrder, db); err != nil {
+	//	return nil, err
+	//}
 
 	return &PaymentResponse{
 		Status:  "Success",
 		Message: fmt.Sprintf("Please complete the payment by visiting: %s", approvalURL),
 	}, nil
 }
-func saveVisaTransactionToDB(cardNumber, expiryDate string, amount float64, currency string) error {
+
+/*func savePaymentToDB(order *paypal.Order, db *sql.DB) error {
+	query := `
+        INSERT INTO payments (id, intent, payer_email, total, currency, description) 
+        VALUES (?, ?, ?, ?, ?, ?)
+    `
+	_, err := db.Exec(
+		query,
+		order.ID,
+		order.Intent,
+		order.Payer.EmailAddress,
+		order.PurchaseUnits[0].Amount.Value,
+		order.PurchaseUnits[0].Amount.Currency,
+		order.PurchaseUnits[0].Description,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to save payment to database: %w", err)
+	}
+	return nil
+}*/
+
+func saveVisaTransactionToDB(cardNumber, expiryDate string, amount float64, currency string, db *sql.DB) error {
 	query := `
         INSERT INTO visa_transactions (card_number, expiry_date, amount, currency) 
         VALUES (?, ?, ?, ?)
@@ -143,7 +142,7 @@ func saveVisaTransactionToDB(cardNumber, expiryDate string, amount float64, curr
 	return nil
 }
 
-func ProcessVisaPayment(cardNumber, expiryDate, cvv string, amount float64, currency string) (*PaymentResponse, error) {
+func ProcessVisaPayment(cardNumber, expiryDate, cvv string, amount float64, currency string, db *sql.DB) (*PaymentResponse, error) {
 	// Normally, you would send these details to Visa's payment gateway
 	// For security, card details should never be logged or stored
 	visaGatewayURL := os.Getenv("VISA_API_URL")
@@ -180,7 +179,7 @@ func ProcessVisaPayment(cardNumber, expiryDate, cvv string, amount float64, curr
 		return nil, fmt.Errorf("Visa payment gateway responded with status: %s", resp.Status)
 	}
 	// Save successful transaction to the database
-	if err := saveVisaTransactionToDB(cardNumber, expiryDate, amount, currency); err != nil {
+	if err := saveVisaTransactionToDB(cardNumber, expiryDate, amount, currency, db); err != nil {
 		return nil, err
 	}
 

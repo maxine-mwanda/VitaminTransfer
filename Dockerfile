@@ -13,4 +13,4 @@ RUN apk --no-cache add ca-certificates
 COPY --from=builder /go/bin/app /app
 ENTRYPOINT /app
 LABEL Name=vitamintransfer Version=0.0.1
-EXPOSE 8000
+EXPOSE 8080

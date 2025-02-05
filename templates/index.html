@@ -12,7 +12,7 @@
   <header>
     <div class="container">
       <div class="logo">
-        <img src="images/logo.png" alt="VitaminTransfer Logo">
+        <img src="../images/vitamin transfer logo (2).jpg" alt="Vitamin Transfer Logo">
       </div>
       <nav>
         <ul>
@@ -45,7 +45,7 @@
           <p>With your support, we can reach more people and make a lasting impact on their lives.</p>
         </div>
         <div class="about-image">
-          <img src="images/about.jpg" alt="About VitaminTransfer">
+          <img src="../images/Image 5.jpeg" alt="About VitaminTransfer">
         </div>
       </div>
     </div>
@@ -62,12 +62,12 @@
           <p>We've provided vitamins to over 10,000 people in need.</p>
         </div>
         <div class="impact-item">
-          <img src="images/impact2.jpg" alt="Impact 2">
+          <img src="../images/Image 10.jpeg" alt="Impact 2">
           <h3>50+ Communities Served</h3>
           <p>Our programs have reached communities across the globe.</p>
         </div>
         <div class="impact-item">
-          <img src="images/impact3.jpg" alt="Impact 3">
+          <img src="../images/Image 4.jpeg" alt="Impact 3">
           <h3>95% Donation Efficiency</h3>
           <p>95% of your donation goes directly to those in need.</p>
         </div>
@@ -112,7 +112,7 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-logo">
-          <img src="images/logo.png" alt="VitaminTransfer Logo">
+          <img src="../images/vitamin transfer logo (2).jpg" alt="Vitamin Transfer Logo">
         </div>
         <div class="footer-links">
           <ul>
@@ -134,7 +134,7 @@
   </footer>
 
   <!-- JavaScript for Payment Handling -->
-<script>
+  <script>
   async function handlePayment(method) {
     const amountInput = document.getElementById('amount');
     const amount = parseFloat(amountInput.value);
@@ -145,32 +145,45 @@
     }
 
     const paymentStatus = document.getElementById('payment-status');
-    paymentStatus.textContent = 'Processing payment...';
+    //paymentStatus.textContent = 'Processing payment...';
     paymentStatus.style.color = 'blue';
 
+    console.log("Sending JSON:", JSON.stringify({ paymentMethod: method, amount })); // Debugging
+    let data;
     try {
-      const response = await fetch('/donate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({method, amount }),
+      const payload = JSON.stringify({ paymentMethod: method, amount });
+
+      console.log("Sending JSON:", payload); // Debugging
+
+      const response = await fetch("http://127.0.0.1:8080/donate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
       });
 
-      const data = await response.json();
+      console.log("Response Status:", response.status);
+      console.log("Response Headers:", response.headers.get("content-type"));
 
-      if (!response.ok) {
-        throw new Error('Payment failed');
+      //raw response
+      const rawResponse = await response.text();
+      console.log("Raw response:". rawResponse);
+
+      let data;
+      if (response.headers.get("content-type")?.includes("application/json")) {
+        data = JSON.parse(rawResponse);// Parse JSON response
+      } else {
+        data = rawResponse; // Debugging for text responses
       }
 
-      //const data = await response.text();
-      paymentStatus.textContent = data;
-      paymentStatus.style.color = 'green';
-    } catch (error) {
-      paymentStatus.textContent = `Payment failed: ${error.message}`;
-      paymentStatus.style.color = 'red';
+      } catch (error) {
+      console.error("Error parsing JSON:", error);
+      //document.getElementById("payment-status").textContent = `Error: ${error.message}`;
+      return;
     }
-  }
-</script>
+
+    console.log("Parsed Response:", data);
+    document.getElementById("payment-status").textContent = data.message;
+  };
+  </script>
 </body>
 </html>

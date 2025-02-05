@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/joho/godotenv"
 )
@@ -27,7 +28,7 @@ func main() {
 	http.HandleFunc("/success", controllers.SuccessHandler)
 
 	// Start server
-	port := "8080"
+	port := os.Getenv("PORT")
 	utils.Logger.Infof("Server is running on port %s", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		utils.Logger.Fatalf("Error starting server: %v", err)
