@@ -3,10 +3,28 @@ package controllers
 import (
 	"VitaminTransfer/models"
 	"VitaminTransfer/utils"
+	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
-	"strconv"
+	
 )
+
+type DonationRequest struct {
+	PaymentMethod string  `json:"paymentMethod"`
+	Amount        float64 `json:"amount"`
+	CardNumber    string  `json:"cardNumber"`
+	Expiry        string  `json:"expiry"`
+	CVV           string  `json:"cvv"`
+	PhoneNumber   string  `json:"phoneNumber"`
+}
+
+var allowedMethods = map[string]bool{
+	"PayPal": true,
+	"Visa":   true,
+	"Mpesa": true,
+}
 
 func DonateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -14,38 +32,79 @@ func DonateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.FormValue("name")
-	email := r.FormValue("email")
-	amount := r.FormValue("amount")
-	paymentMethod := r.FormValue("paymentMethod")
+	w.Header().Set("Access-Control-Allow-Origin", "*") // Adjust for security
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	utils.Logger.Infof("Processing donation: Name=%s, Email=%s, Amount=%s, PaymentMethod=%s", name, email, amount, paymentMethod)
-
-	var err error
-
-	switch paymentMethod {
-	/*case "PayPal":
-	var amountFloat float64
-	amountFloat, err = strconv.ParseFloat(amount, 64)
-	if err != nil {
-		http.Error(w, "Invalid amount", http.StatusBadRequest)
+	if r.Header.Get("Content-Type") != "application/json" {
+		http.Error(w, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
 		return
 	}
-	_, err = models.ProcessPayPalPayment(amountFloat, "USD")*/
-	case "Visa":
-		cardNumber := r.FormValue("cardNumber")
-		expiry := r.FormValue("expiry")
-		cvv := r.FormValue("cvv")
-		var amountFloat float64
-		amountFloat, err = strconv.ParseFloat(amount, 64)
+	// Read the raw body for debugging
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		log.Println("Error reading request body:", err)
+		return
+	}
+
+	log.Println("Raw request body:", string(body)) // Debugging log
+
+	var donation DonationRequest
+	err = json.Unmarshal(body, &donation)
+	if err != nil {
+		http.Error(w, "Invalid JSON request", http.StatusBadRequest)
+		log.Println("Error decoding JSON:", err)
+		return
+	}
+	
+	// Now decode the JSON
+	err = json.Unmarshal(body, &donation)
+	if err != nil {
+		http.Error(w, "Invalid JSON request", http.StatusBadRequest)
+		log.Println("Error decoding JSON:", err)
+		return
+	}
+	
+	//amount := r.FormValue("amount")
+	//paymentMethod := r.FormValue("paymentMethod")
+
+	// Validate the payment method
+	if !allowedMethods[donation.PaymentMethod] {
+		http.Error(w, "Invalid payment method", http.StatusBadRequest)
+		return
+	}
+	//validate the data parsed
+	if donation.PaymentMethod == "" || donation.Amount <= 0 {
+		http.Error(w, "Invalid payment method or amount", http.StatusBadRequest)
+		log.Printf("Received invalid data: Method=%s, Amount=%.2f\n", donation.PaymentMethod, donation.Amount)
+		return
+	}
+
+	utils.Logger.Infof("Received Method: %s, Amount: %s", donation.PaymentMethod, donation.Amount)
+
+	utils.Logger.Infof("Processing donation: Amount=%s, PaymentMethod=%s", donation.Amount, donation.PaymentMethod)
+
+	switch donation.PaymentMethod {
+	case "PayPal":
 		if err != nil {
 			http.Error(w, "Invalid amount", http.StatusBadRequest)
 			return
 		}
-		_, err = models.ProcessVisaPayment(amount, cardNumber, expiry, amountFloat, cvv)
+		_, err = models.ProcessPayPalPayment(donation.Amount, "USD")
+	case "Visa":
+	if donation.CardNumber == "" || donation.Expiry == "" || donation.CVV == "" {
+			http.Error(w, "Missing Visa card details", http.StatusBadRequest)
+			return
+		}
+		//_, err = models.ProcessVisaPayment(donation.Amount, donation.CardNumber, donation.Expiry, amountFloat, cvv)
 	case "Mpesa":
-		phoneNumber := r.FormValue("phoneNumber")
-		err = models.ProcessMpesaPayment(amount, phoneNumber)
+			if donation.PhoneNumber == "" {
+			http.Error(w, "Missing M-Pesa phone number", http.StatusBadRequest)
+			return
+		}
+		//_,err = models.ProcessMpesaPayment(donation.Amount, donation.PhoneNumber)
+	
 	default:
 		http.Error(w, "Invalid payment method", http.StatusBadRequest)
 		return

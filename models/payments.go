@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -23,10 +24,10 @@ type PaymentResponse struct {
 func InitializePayPalClient() (*paypal.Client, error) {
 	clientID := os.Getenv("PAYPAL_CLIENT_ID")
 	clientSecret := os.Getenv("PAYPAL_CLIENT_SECRET")
-	isLive := os.Getenv("PAYPAL_ENV")
+	log.Printf("Using PayPal Client ID: %s, paypal secret %s, APIBase: %s", clientID, clientSecret, paypal.APIBaseSandBox)
 
 	// Create PayPal client
-	client, err := paypal.NewClient(clientID, clientSecret, isLive)
+	client, err := paypal.NewClient(clientID, clientSecret, paypal.APIBaseSandBox)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize PayPal client: %w", err)
 	}
@@ -96,8 +97,8 @@ func ProcessPayPalPayment(amount float64, currency string) (*PaymentResponse, er
 		},
 		nil, // Additional parameters (if any)
 		&paypal.ApplicationContext{
-			ReturnURL: "http://localhost:8080/success", // Redirect URL after successful payment
-			CancelURL: "http://localhost:8080/cancel",  // Redirect URL if the user cancels
+			ReturnURL: "http://localhost:8000/success", // Redirect URL after successful payment
+			CancelURL: "http://localhost:8000/cancel",  // Redirect URL if the user cancels
 		},
 	)
 

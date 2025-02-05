@@ -1,11 +1,12 @@
 package main
 
 import (
+	"VitaminTransfer/controllers"
+	"VitaminTransfer/utils"
+	"fmt"
 	"log"
 	"net/http"
-	"VitaminTransfer/utils"
-	"VitaminTransfer/controllers"
-	"fmt"
+
 	"github.com/joho/godotenv"
 )
 
@@ -26,7 +27,7 @@ func main() {
 	http.HandleFunc("/success", controllers.SuccessHandler)
 
 	// Start server
-	port := "8000"
+	port := "8080"
 	utils.Logger.Infof("Server is running on port %s", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		utils.Logger.Fatalf("Error starting server: %v", err)

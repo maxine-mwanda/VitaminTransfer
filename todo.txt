@@ -1,0 +1,6 @@
+1. Connect the frontend to the backend //done 
+2. Test payments especially paypal and visa
+3. Finish intergrating and testing mpesa
+4. Ensure images are correctly added //done
+5. Substitute form data for json in donate.go for visa and mpesa //done
+6. Create logo //done
