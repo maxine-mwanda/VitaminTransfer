@@ -9,25 +9,25 @@ body {
   }
   
   .container {
-    width: 90%;
+    width: 100%;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0;
   }
   
   /* Header */
   header {
-    background: #2c3e50; /* Dark blue */
+    background: #015333; /* Dark green */
     color: #fff;
-    padding: 20px 0;
+    padding: 10px 10;
   }
   
   header .logo img {
-    height: 50px;
+    height: 200px;
   }
   
   header nav ul {
     list-style: none;
-    padding: 0;
+    padding: 20px 30;
     margin: 0;
     display: flex;
     justify-content: flex-end;
@@ -50,7 +50,7 @@ body {
   
   /* Hero Section */
   .hero {
-    background: url('images/hero.jpg') no-repeat center center/cover;
+    background: url('../images/Image\ 10.jpeg') no-repeat center center/cover;
     color: #fff;
     padding: 150px 0;
     text-align: center;
@@ -223,7 +223,7 @@ body {
   /* Contact Section */
   .contact {
     padding: 80px 0;
-    background: #2c3e50; /* Dark blue */
+    background: #015333; /* Dark blue */
     color: #fff;
   }
   
@@ -264,7 +264,7 @@ body {
   
   /* Footer */
   footer {
-    background: #34495e; /* Darker blue */
+    background: #015333; /* Darker blue */
     color: #fff;
     padding: 40px 0;
     text-align: center;
@@ -278,7 +278,7 @@ body {
   }
   
   footer .footer-logo img {
-    height: 50px;
+    height: 200px;
   }
   
   footer .footer-links ul {
@@ -286,7 +286,7 @@ body {
     padding: 0;
     margin: 0;
     display: flex;
-    gap: 20px;
+    gap: 30px;
   }
   
   footer .footer-links ul li a {
@@ -301,7 +301,7 @@ body {
   
   footer .footer-social a {
     color: #fff;
-    margin: 0 10px;
+    margin: 0 20px;
     font-size: 1.2rem;
     transition: color 0.3s ease;
   }
