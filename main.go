@@ -23,6 +23,10 @@ func main() {
 	utils.InitLogger()
 	utils.Logger.Info("Starting Vitamin Transfer application...")
 
+	//Serving static files
+	fs := http.FileServer(http.Dir("templates"))
+	http.Handle("/templates/", http.StripPrefix("/templates/", fs))
+
 	// Define routes
 	http.HandleFunc("/", controllers.HomeHandler)
 	http.HandleFunc("/donate", controllers.DonateHandler)
@@ -34,6 +38,4 @@ func main() {
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		utils.Logger.Fatalf("Error starting server: %v", err)
 	}
-	fs := http.FileServer(http.Dir("templates"))
-	http.Handle("/templates/", http.StripPrefix("/templates/", fs))
 }
