@@ -34,4 +34,6 @@ func main() {
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		utils.Logger.Fatalf("Error starting server: %v", err)
 	}
+	fs := http.FileServer(http.Dir("templates"))
+	http.Handle("/templates/", http.StripPrefix("/templates/", fs))
 }
