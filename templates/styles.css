@@ -16,9 +16,10 @@ body {
   
   /* Header */
   header {
-    background: #015333; /* Dark green */
+    background: url('../templates/img/ChatGPT\ Image\ Apr\ 4\,\ 2025\,\ 06_32_11\ PM.png') no-repeat center center/cover;
+    /*background: #015333;  Dark green */
     color: #fff;
-    padding: 10px 10;
+    padding: 1px 1;
   }
   
   header .logo img {
