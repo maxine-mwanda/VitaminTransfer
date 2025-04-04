@@ -2,9 +2,9 @@ version: '3.4'
 
 services:
   vitamintransfer:
-    image: vitamintransfer
+    image: VitaminTransfer
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - 8000:8000
+      - 8080:8080
